@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "644534987230",
+    "project_id": "wanderlist-a59e6",
+    "storage_bucket": "wanderlist-a59e6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644534987230:android:6b19fa7288f59e6a03554f",
+        "android_client_info": {
+          "package_name": "com.example.wanderlist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNtcQtEkBcwWBsqSH8F5e0lbaVm5HMh7k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644534987230:android:400752cba448078803554f",
+        "android_client_info": {
+          "package_name": "com.wanderlist"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNtcQtEkBcwWBsqSH8F5e0lbaVm5HMh7k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

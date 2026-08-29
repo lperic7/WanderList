@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/wishlistFragment"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <fragment
+        android:id="@+id/wishlistFragment"
+        android:name="com.example.wanderlist.ui.wishlist.WishlistFragment"
+        android:label="Wishlist"
+        tools:layout="@layout/fragment_wishlist" />
+
+    <fragment
+        android:id="@+id/visitedFragment"
+        android:name="com.example.wanderlist.ui.visited.VisitedFragment"
+        android:label="Posjećeno"
+        tools:layout="@layout/fragment_visited" />
+
+    <fragment
+        android:id="@+id/randomPick"
+        android:name="com.example.wanderlist.ui.random.RandomFragment"
+        android:label="Iznenadi me"
+        tools:layout="@layout/fragment_random" />
+
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.example.wanderlist.ui.map.MapFragment"
+        android:label="Karta"
+        tools:layout="@layout/fragment_map" />
+
+</navigation>
