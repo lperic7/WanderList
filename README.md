@@ -17,7 +17,7 @@ WanderList rješava problem organizacije putnih želja — korisnik dodaje desti
 
 ## Tehnologije
 
-Kotlin · MVVM arhitektura · Firebase Firestore · Firebase Authentication · Retrofit · OpenWeather API (trenutna prognoza + 5-dnevna prognoza + geokodiranje) · OSMDroid · WorkManager · Navigation Component · Kotlin Coroutines · View Binding
+Kotlin · Jetpack Compose · MVVM arhitektura · Firebase Firestore · Firebase Authentication · Retrofit · OpenWeather API (trenutna prognoza + 5-dnevna prognoza + geokodiranje) · OSMDroid · WorkManager · Compose Navigation · Kotlin Coroutines
 
 ## Pokretanje projekta
 
