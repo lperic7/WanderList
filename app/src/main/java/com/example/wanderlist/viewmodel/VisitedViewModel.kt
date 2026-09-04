@@ -45,16 +45,11 @@ class VisitedViewModel : ViewModel() {
         }
     }
 
-    fun updateVisited(destination: Destination, newRating: Int, newReview: String) {
+    fun updateVisited(destination: Destination, name: String, country: String, rating: Int, review: String) {
         viewModelScope.launch {
-            repository.updateDestination(destination.copy(rating = newRating, notes = newReview))
-            loadVisited()
-        }
-    }
-
-    fun deleteDestination(id: String) {
-        viewModelScope.launch {
-            repository.deleteDestination(id)
+            repository.updateDestination(
+                destination.copy(name = name, country = country, rating = rating, notes = review)
+            )
             loadVisited()
         }
     }
@@ -62,6 +57,13 @@ class VisitedViewModel : ViewModel() {
     fun returnToWishlist(destination: Destination) {
         viewModelScope.launch {
             repository.updateDestination(destination.copy(visited = false))
+            loadVisited()
+        }
+    }
+
+    fun deleteDestination(id: String) {
+        viewModelScope.launch {
+            repository.deleteDestination(id)
             loadVisited()
         }
     }
