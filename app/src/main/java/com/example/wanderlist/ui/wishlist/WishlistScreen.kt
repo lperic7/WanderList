@@ -253,14 +253,27 @@ fun WishlistScreen() {
         }
     }
 
+    var addErrorMessage by remember { mutableStateOf<String?>(null) }
+    var editErrorMessage by remember { mutableStateOf<String?>(null) }
+
     if (showAddDialog) {
         AddEditDestinationDialog(
             title = "Nova destinacija",
             confirmLabel = "Dodaj",
-            onDismiss = { showAddDialog = false },
-            onConfirm = { name, country ->
-                viewModel.addDestination(name, country)
+            errorMessage = addErrorMessage,
+            onDismiss = {
                 showAddDialog = false
+                addErrorMessage = null
+            },
+            onConfirm = { name, country ->
+                viewModel.addDestination(name, country) { success, error ->
+                    if (success) {
+                        showAddDialog = false
+                        addErrorMessage = null
+                    } else {
+                        addErrorMessage = error
+                    }
+                }
             }
         )
     }
@@ -271,10 +284,20 @@ fun WishlistScreen() {
             initialCountry = destination.country,
             title = "Uredi destinaciju",
             confirmLabel = "Spremi",
-            onDismiss = { editingDestination = null },
-            onConfirm = { name, country ->
-                viewModel.updateDestination(destination.id, name, country)
+            errorMessage = editErrorMessage,
+            onDismiss = {
                 editingDestination = null
+                editErrorMessage = null
+            },
+            onConfirm = { name, country ->
+                viewModel.updateDestination(destination.id, name, country) { success, error ->
+                    if (success) {
+                        editingDestination = null
+                        editErrorMessage = null
+                    } else {
+                        editErrorMessage = error
+                    }
+                }
             }
         )
     }

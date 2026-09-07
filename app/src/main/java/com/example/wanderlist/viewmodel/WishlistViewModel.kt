@@ -24,16 +24,30 @@ class WishlistViewModel : ViewModel() {
         loadDestinations()
     }
 
-    fun loadDestinations() {
+    fun loadDestinations(showLoading: Boolean = true) {
         viewModelScope.launch {
-            _isLoading.value = true
+            if (showLoading) _isLoading.value = true
             val all = repository.getAllDestinations()
             _destinations.value = all.filter { !it.visited }
-            _isLoading.value = false
+            if (showLoading) _isLoading.value = false
         }
     }
 
-    fun addDestination(name: String, country: String) {
+    private fun isDuplicateLocation(lat: Double, lon: Double, excludeId: String? = null): Boolean {
+        val threshold = 0.05
+        return _destinations.value?.any {
+            it.id != excludeId &&
+                    (it.latitude != 0.0 || it.longitude != 0.0) &&
+                    Math.abs(it.latitude - lat) < threshold &&
+                    Math.abs(it.longitude - lon) < threshold
+        } ?: false
+    }
+
+    fun addDestination(
+        name: String,
+        country: String,
+        onResult: (success: Boolean, errorMessage: String?) -> Unit
+    ) {
         viewModelScope.launch {
             val query = if (country.isNotBlank()) "$name,$country" else name
 
@@ -46,19 +60,33 @@ class WishlistViewModel : ViewModel() {
                 null
             }
 
+            val lat = coordinates?.lat ?: 0.0
+            val lon = coordinates?.lon ?: 0.0
+
+            if ((lat != 0.0 || lon != 0.0) && isDuplicateLocation(lat, lon)) {
+                onResult(false, "Ova destinacija je već na listi želja.")
+                return@launch
+            }
+
             val destination = Destination(
                 name = name,
                 country = country,
-                latitude = coordinates?.lat ?: 0.0,
-                longitude = coordinates?.lon ?: 0.0
+                latitude = lat,
+                longitude = lon
             )
 
             repository.addDestination(destination)
-            loadDestinations()
+            loadDestinations(showLoading = false)
+            onResult(true, null)
         }
     }
 
-    fun updateDestination(id: String, name: String, country: String) {
+    fun updateDestination(
+        id: String,
+        name: String,
+        country: String,
+        onResult: (success: Boolean, errorMessage: String?) -> Unit
+    ) {
         viewModelScope.launch {
             val query = if (country.isNotBlank()) "$name,$country" else name
 
@@ -72,29 +100,47 @@ class WishlistViewModel : ViewModel() {
             }
 
             val existing = _destinations.value?.find { it.id == id }
-            val updated = existing?.copy(
+            if (existing == null) {
+                onResult(false, "Destinacija nije pronađena.")
+                return@launch
+            }
+
+            val lat = coordinates?.lat ?: existing.latitude
+            val lon = coordinates?.lon ?: existing.longitude
+
+            if ((lat != 0.0 || lon != 0.0) && isDuplicateLocation(lat, lon, excludeId = id)) {
+                onResult(false, "Ova destinacija je već na listi želja.")
+                return@launch
+            }
+
+            val updated = existing.copy(
                 name = name,
                 country = country,
-                latitude = coordinates?.lat ?: existing.latitude,
-                longitude = coordinates?.lon ?: existing.longitude
-            ) ?: return@launch
+                latitude = lat,
+                longitude = lon
+            )
 
             repository.updateDestination(updated)
-            loadDestinations()
+            loadDestinations(showLoading = false)
+            onResult(true, null)
         }
     }
 
     fun deleteDestination(id: String) {
         viewModelScope.launch {
-            repository.deleteDestination(id)
-            loadDestinations()
+            try {
+                repository.deleteDestination(id)
+            } catch (e: Exception) {
+                android.util.Log.e("WishlistDebug", "Brisanje neuspješno: ${e.message}", e)
+            }
+            loadDestinations(showLoading = false)
         }
     }
 
     fun markAsVisited(destination: Destination) {
         viewModelScope.launch {
             repository.updateDestination(destination.copy(visited = true))
-            loadDestinations()
+            loadDestinations(showLoading = false)
         }
     }
 }

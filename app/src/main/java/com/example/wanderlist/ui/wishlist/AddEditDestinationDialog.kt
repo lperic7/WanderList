@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -21,6 +22,7 @@ fun AddEditDestinationDialog(
     initialCountry: String = "",
     title: String,
     confirmLabel: String,
+    errorMessage: String? = null,
     onDismiss: () -> Unit,
     onConfirm: (name: String, country: String) -> Unit
 ) {
@@ -36,16 +38,25 @@ fun AddEditDestinationDialog(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Naziv destinacije") },
+                    isError = errorMessage != null,
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = country,
                     onValueChange = { country = it },
                     label = { Text("Država") },
+                    isError = errorMessage != null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 12.dp)
                 )
+                errorMessage?.let {
+                    Text(
+                        text = it,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
             }
         },
         confirmButton = {

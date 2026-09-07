@@ -152,6 +152,7 @@ fun VisitedCard(
 
 @Composable
 fun AddVisitedDialog(
+    errorMessage: String? = null,
     onDismiss: () -> Unit,
     onConfirm: (name: String, country: String, rating: Int, review: String) -> Unit
 ) {
@@ -169,16 +170,25 @@ fun AddVisitedDialog(
                     value = name,
                     onValueChange = { name = it },
                     label = { Text("Naziv destinacije") },
+                    isError = errorMessage != null,
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
                     value = country,
                     onValueChange = { country = it },
                     label = { Text("Država") },
+                    isError = errorMessage != null,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 12.dp)
                 )
+                errorMessage?.let {
+                    Text(
+                        text = it,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
                 Text(
                     text = "Ocjena",
                     fontSize = 13.sp,
@@ -369,16 +379,27 @@ fun VisitedScreen() {
         }
     }
 
+    var addErrorMessage by remember { mutableStateOf<String?>(null) }
+
     if (showAddDialog) {
         AddVisitedDialog(
-            onDismiss = { showAddDialog = false },
-            onConfirm = { name, country, rating, review ->
-                viewModel.addVisited(name, country, rating, review)
+            errorMessage = addErrorMessage,
+            onDismiss = {
                 showAddDialog = false
+                addErrorMessage = null
+            },
+            onConfirm = { name, country, rating, review ->
+                viewModel.addVisited(name, country, rating, review) { success, error ->
+                    if (success) {
+                        showAddDialog = false
+                        addErrorMessage = null
+                    } else {
+                        addErrorMessage = error
+                    }
+                }
             }
         )
     }
-
     editingDestination?.let { destination ->
         EditVisitedDialog(
             destination = destination,
