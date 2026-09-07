@@ -310,7 +310,10 @@ fun VisitedScreen() {
                         )
                     }
                     else -> {
-                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            contentPadding = androidx.compose.foundation.layout.PaddingValues(bottom = 88.dp)
+                        ) {
                             items(destinations, key = { it.id }) { destination ->
                                 val dismissState = rememberSwipeToDismissBoxState(
                                     confirmValueChange = { value ->
