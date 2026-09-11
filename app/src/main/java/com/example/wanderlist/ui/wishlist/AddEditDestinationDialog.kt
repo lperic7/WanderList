@@ -23,6 +23,7 @@ fun AddEditDestinationDialog(
     title: String,
     confirmLabel: String,
     errorMessage: String? = null,
+    isSubmitting: Boolean = false,
     onDismiss: () -> Unit,
     onConfirm: (name: String, country: String) -> Unit
 ) {
@@ -39,6 +40,7 @@ fun AddEditDestinationDialog(
                     onValueChange = { name = it },
                     label = { Text("Naziv destinacije") },
                     isError = errorMessage != null,
+                    enabled = !isSubmitting,
                     modifier = Modifier.fillMaxWidth()
                 )
                 OutlinedTextField(
@@ -46,6 +48,7 @@ fun AddEditDestinationDialog(
                     onValueChange = { country = it },
                     label = { Text("Država") },
                     isError = errorMessage != null,
+                    enabled = !isSubmitting,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 12.dp)
@@ -60,16 +63,17 @@ fun AddEditDestinationDialog(
             }
         },
         confirmButton = {
-            TextButton(onClick = {
-                if (name.isNotBlank()) {
-                    onConfirm(name.trim(), country.trim())
+            TextButton(
+                enabled = !isSubmitting,
+                onClick = {
+                    if (name.isNotBlank()) onConfirm(name.trim(), country.trim())
                 }
-            }) {
+            ) {
                 Text(confirmLabel)
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
+            TextButton(onClick = onDismiss, enabled = !isSubmitting) {
                 Text("Odustani")
             }
         }

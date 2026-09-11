@@ -16,6 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -40,7 +41,12 @@ fun MapScreen() {
     val mapView = remember {
         Configuration.getInstance().userAgentValue = context.packageName
         Configuration.getInstance().load(context, PreferenceManager.getDefaultSharedPreferences(context))
-        MapView(context)
+        MapView(context).apply {
+            setTileSource(TileSourceFactory.WIKIMEDIA)
+            setMultiTouchControls(true)
+            controller.setZoom(4.0)
+            controller.setCenter(GeoPoint(48.8566, 2.3522))
+        }
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -61,11 +67,6 @@ fun MapScreen() {
     val coroutineScope = rememberCoroutineScope()
 
     DisposableEffect(Unit) {
-        mapView.setTileSource(TileSourceFactory.WIKIMEDIA)
-        mapView.setMultiTouchControls(true)
-        mapView.controller.setZoom(4.0)
-        mapView.controller.setCenter(GeoPoint(48.8566, 2.3522))
-
         val job = coroutineScope.launch {
             val wishlist = repository.getAllDestinations()
                 .filter { !it.visited && (it.latitude != 0.0 || it.longitude != 0.0) }
@@ -73,15 +74,17 @@ fun MapScreen() {
             count = wishlist.size
             val points = mutableListOf<GeoPoint>()
 
+            mapView.overlays.clear()
             wishlist.forEach { destination ->
                 val point = GeoPoint(destination.latitude, destination.longitude)
                 points.add(point)
 
-                val marker = Marker(mapView)
-                marker.position = point
-                marker.title = destination.name
-                marker.snippet = destination.country
-                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                val marker = Marker(mapView).apply {
+                    position = point
+                    title = destination.name
+                    snippet = destination.country
+                    setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                }
                 mapView.overlays.add(marker)
             }
 
@@ -104,7 +107,7 @@ fun MapScreen() {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(80.dp)
-                .padding(start = 16.dp),
+                .padding(start = 16.dp, top = 16.dp),
         ) {
             Text(
                 text = countText,
@@ -113,11 +116,13 @@ fun MapScreen() {
             )
         }
 
+        // Dodan .clipToBounds() sprječava da se unutrašnji View širi izvan zadanih granica okvira
         AndroidView(
             factory = { mapView },
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
+                .clipToBounds()
         )
     }
 }

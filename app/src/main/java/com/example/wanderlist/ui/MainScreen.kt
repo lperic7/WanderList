@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -86,7 +87,8 @@ fun MainScreen(onLogout: () -> Unit) {
 
             NavHost(
                 navController = navController,
-                startDestination = BottomNavItem.Wishlist.route
+                startDestination = BottomNavItem.Wishlist.route,
+                modifier = Modifier.weight(1f)
             ) {
                 composable(BottomNavItem.Wishlist.route) {
                     com.example.wanderlist.ui.wishlist.WishlistScreen()
