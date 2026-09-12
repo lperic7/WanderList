@@ -253,29 +253,31 @@ fun WishlistScreen() {
         }
     }
 
-    var addErrorMessage by remember { mutableStateOf<String?>(null) }
-    var isAdding by remember { mutableStateOf(false) }
+    var editErrorMessage by remember { mutableStateOf<String?>(null) }
+    var isEditing by remember { mutableStateOf(false) }
 
-    if (showAddDialog) {
+    editingDestination?.let { destination ->
         AddEditDestinationDialog(
-            title = "Nova destinacija",
-            confirmLabel = "Dodaj",
-            errorMessage = addErrorMessage,
-            isSubmitting = isAdding,
+            initialName = destination.name,
+            initialCountry = destination.country,
+            title = "Uredi destinaciju",
+            confirmLabel = "Spremi",
+            errorMessage = editErrorMessage,
+            isSubmitting = isEditing,
             onDismiss = {
-                showAddDialog = false
-                addErrorMessage = null
-                isAdding = false
+                editingDestination = null
+                editErrorMessage = null
+                isEditing = false
             },
             onConfirm = { name, country ->
-                isAdding = true
-                viewModel.addDestination(name, country) { success, error ->
-                    isAdding = false
+                isEditing = true
+                viewModel.updateDestination(destination.id, name, country) { success, error ->
+                    isEditing = false
                     if (success) {
-                        showAddDialog = false
-                        addErrorMessage = null
+                        editingDestination = null
+                        editErrorMessage = null
                     } else {
-                        addErrorMessage = error
+                        editErrorMessage = error
                     }
                 }
             }
