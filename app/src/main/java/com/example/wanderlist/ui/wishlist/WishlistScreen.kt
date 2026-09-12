@@ -283,4 +283,32 @@ fun WishlistScreen() {
             }
         )
     }
+    var addErrorMessage by remember { mutableStateOf<String?>(null) }
+    var isAdding by remember { mutableStateOf(false) }
+
+    if (showAddDialog) {
+        AddEditDestinationDialog(
+            title = "Nova destinacija",
+            confirmLabel = "Dodaj",
+            errorMessage = addErrorMessage,
+            isSubmitting = isAdding,
+            onDismiss = {
+                showAddDialog = false
+                addErrorMessage = null
+                isAdding = false
+            },
+            onConfirm = { name, country ->
+                isAdding = true
+                viewModel.addDestination(name, country) { success, error ->
+                    isAdding = false
+                    if (success) {
+                        showAddDialog = false
+                        addErrorMessage = null
+                    } else {
+                        addErrorMessage = error
+                    }
+                }
+            }
+        )
+    }
 }
